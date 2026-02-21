@@ -1,0 +1,85 @@
+<MainLayout>:
+    orientation: 'vertical'
+    padding: 30
+    spacing: 15
+    canvas.before:
+        Color:
+            rgba: (0.05, 0.05, 0.07, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Label:
+        text: 'URL SHORTENER'
+        font_size: '28sp'
+        bold: True
+        color: (0.2, 0.6, 1, 1)
+        size_hint_y: None
+        height: 80
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 10
+        size_hint_y: None
+        height: 100
+        Label:
+            text: 'Вставьте ссылку:'
+            halign: 'left'
+            text_size: self.size
+            color: (0.7, 0.7, 0.7, 1)
+            size_hint_y: None
+            height: 30
+        TextInput:
+            id: url_input
+            multiline: False
+            padding: [15, (self.height - self.line_height) / 2]
+            background_normal: ''
+            background_color: (0.1, 0.1, 0.15, 1)
+            foreground_color: (1, 1, 1, 1)
+            cursor_color: (0.2, 0.6, 1, 1)
+            font_size: '16sp'
+            hint_text: 'https://example.com'
+            hint_text_color: (0.4, 0.4, 0.4, 1)
+            write_tab: False
+            size_hint_y: None
+            height: 50
+
+    BoxLayout:
+        size_hint_y: None
+        height: 80
+        padding: [0, 20, 0, 0] 
+        Button:
+            id: btn
+            text: 'СОКРАТИТЬ'
+            size_hint_y: None
+            height: 60
+            background_normal: ''
+            background_color: (0.2, 0.6, 1, 1)
+            font_size: '18sp'
+            bold: True
+            on_press: 
+                app.animate_button(self)
+                app.shorten_link()
+
+    Label:
+        id: result_label
+        text: 'Ожидание ссылки...'
+        font_size: '16sp'
+        color: (0.6, 0.6, 0.6, 1)
+        halign: 'center'
+        valign: 'middle'
+        text_size: self.size
+        markup: True
+        size_hint_y: None
+        height: 120
+        rotation: 0
+        canvas.before:
+            PushMatrix
+            Rotate:
+                angle: self.rotation
+                origin: self.center
+        canvas.after:
+            PopMatrix
+
+    Widget:
+        size_hint_y: 1
