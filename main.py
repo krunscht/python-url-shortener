@@ -3,6 +3,7 @@ Config.set('graphics', 'resizable', '0')
 Config.set('graphics', 'width', '450')
 Config.set('graphics', 'height', '550')
 
+import os, sys
 import requests
 import configparser
 import threading
@@ -11,8 +12,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.core.clipboard import Clipboard
 from kivy.animation import Animation
 from kivy.clock import Clock
-
-import os, sys
 from kivy.resources import resource_add_path
 
 def resource_path(relative_path):
@@ -105,3 +104,4 @@ class ShortenerApp(App):
 
 if __name__ == '__main__':
     ShortenerApp().run()
+    
