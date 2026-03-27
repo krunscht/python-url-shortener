@@ -4,9 +4,8 @@ Config.set('graphics', 'width', '450')
 Config.set('graphics', 'height', '550')
 
 import os, sys
-import requests
-import configparser
 import threading
+import pyshorteners
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.clipboard import Clipboard
@@ -27,8 +26,6 @@ class MainLayout(BoxLayout):
 class ShortenerApp(App):
     def build(self):
         self.title = "URL Shortener"
-        self.config_file = 'config.ini'
-        self.config = configparser.ConfigParser()
         self.spinner_anim = None
         return MainLayout()
     
@@ -43,7 +40,7 @@ class ShortenerApp(App):
 
     def start_spinner(self):
         lbl = self.root.ids.result_label
-        lbl.text = "->" 
+        lbl.text = "<|>" 
         lbl.font_size = '50sp'
         lbl.color = (0.2, 0.6, 1, 1)
         
@@ -72,36 +69,23 @@ class ShortenerApp(App):
         GREEN = (0.3, 0.9, 0.4, 1)
         ORANGE = (1, 0.7, 0.4, 1)
 
-        try:
-            self.config.read(self.config_file)
-            api_key = self.config["cuttly"]["API_KEY"]
-        except Exception:
-            self._update_ui("\nОшибка:\nПроверь config.ini", RED)
-            return
-
         if not long_url:
             self._update_ui("\nВнимание:\nПоле пустое", ORANGE)
             return
 
-        api_url = f"https://cutt.ly/api/api.php?key={api_key}&short={long_url}"
-
         try:
-            response = requests.get(api_url, timeout=10)
-            data = response.json()
+            shortener = pyshorteners.Shortener()
+            short_link = shortener.tinyurl.short(long_url)
 
-            if data['url']['status'] == 7:
-                short_link = data['url']['shortLink']
-                Clipboard.copy(short_link)
-                self._update_ui(f"Готово!\n[b]{short_link}[/b]\n(Скопировано)", GREEN)
-            else:
-                self._update_ui(f"Ошибка Cuttly:\nСтатус {data['url']['status']}", RED)
+            Clipboard.copy(short_link)
+            self._update_ui(f"Готово!\n[b]{short_link}[/b]\n(Скопировано)", GREEN)
 
-        except Exception:
-            self._update_ui("Ошибка сети", RED)
+        except Exception as e:
+            print(f"Error: {e}")
+            self._update_ui("Ошибка сети или\nневерная ссылка", RED)
 
     def _update_ui(self, text, color):
         Clock.schedule_once(lambda dt: self.stop_spinner(text, color))
 
 if __name__ == '__main__':
     ShortenerApp().run()
-    
